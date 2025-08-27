@@ -8,17 +8,17 @@
 </head>
 <body>
 
-    <div class="container">
-        <h1>Converse com a IA</h1>
-        <p>Faça uma pergunta e a IA irá responder.</p>
-
-        <div class="input-container">
+    <div class="chat-container">
+        <div class="chat-header">
+            <h1>Converse com a IA</h1>
+            <p>Faça uma pergunta e a IA irá responder.</p>
+        </div>
+        <div class="chat-messages" id="chatMessages">
+            <!-- As mensagens do chat aparecerão aqui -->
+        </div>
+        <div class="chat-input-container">
             <input type="text" id="userInput" placeholder="Digite sua pergunta aqui...">
             <button id="sendButton">Enviar</button>
-        </div>
-
-        <div id="responseContainer">
-            <p id="response"></p>
         </div>
     </div>
 
@@ -29,7 +29,7 @@
         }
       }
     </script>
-    <script type="module" src="Index.js"></script>
+    <script type="module" src="index.js"></script>
 
 </body>
 </html>
