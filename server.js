@@ -1,46 +1,62 @@
-// Carrega as variáveis de ambiente do arquivo .env
-require('dotenv').config();
-
-const express = require('express');
-const { GoogleGenAI } = require('@google/genai');
-const cors = require('cors');
+import 'dotenv/config'; // Carrega as variáveis de ambiente no início
+import express from 'express';
+import cors from 'cors';
+import { GoogleGenAI } from '@google/genai';
 
 // Inicializa o Express
 const app = express();
 const port = process.env.PORT || 3000;
 
 // Configurações de Middleware
-app.use(cors()); // Permite requisições de outras origens (seu frontend)
-app.use(express.json()); // Permite que o servidor entenda JSON no corpo das requisições
-app.use(express.static('public')); // Serve os arquivos estáticos da pasta 'public' (seu frontend)
+app.use(cors());
+app.use(express.json());
+app.use(express.static('public'));
 
-// Validação da API Key e inicialização do GoogleGenAI
-const apiKey = process.env.GEMINI_API_KEY;
-if (!apiKey) {
+// Validação da API Key
+if (!process.env.GEMINI_API_KEY) {
   console.error("A variável de ambiente GEMINI_API_KEY não foi definida.");
-  process.exit(1); // Encerra o processo se a chave não existir
+  process.exit(1);
 }
-const ai = new GoogleGenAI(apiKey);
 
-// Rota para receber o prompt e retornar a resposta da IA
+// Inicializa o cliente da IA. A chave é pega automaticamente do process.env
+const ai = new GoogleGenAI({});
+
+// Rota para o chat, adaptada ao novo método
 app.post('/generate', async (req, res) => {
-  // Pega o 'prompt' do corpo da requisição
-  const { prompt } = req.body;
+  // Recebe o prompt E o histórico
+  const { prompt, historico } = req.body;
+  const historicoRecebido = historico || [];
 
-  // Validação simples para ver se o prompt existe
   if (!prompt) {
     return res.status(400).json({ error: 'O prompt é obrigatório.' });
   }
 
   try {
-    // Chama a API do Gemini
-    const response = await ai.models.generateContent({
+    // USA O NOVO MÉTODO: ai.chats.create
+    // O modelo 'gemini-1.5-flash' é uma ótima opção, rápido e moderno.
+    const chat = ai.chats.create({
       model: "gemini-2.5-flash",
-      contents: prompt,
+      history: historicoRecebido,
     });
 
-    // Envia a resposta de volta para o frontend
-    res.json({ response: response.text });
+    // Envia a mensagem no novo formato
+    const result = await chat.sendMessage({
+      message: prompt,
+    });
+
+    // A resposta de texto agora vem direto no '.text'
+    const textoResposta = result.text;
+
+    // Cria o novo histórico (lógica permanece a mesma)
+    const novoHistorico = [
+      ...historicoRecebido,
+      { role: "user", parts: [{ text: prompt }] },
+      { role: "model", parts: [{ text: textoResposta }] },
+    ];
+
+    // Envia a resposta E o novo histórico atualizado
+    res.json({ response: textoResposta, historico: novoHistorico });
+
   } catch (error) {
     console.error("Erro ao chamar a API do Gemini:", error);
     res.status(500).json({ error: 'Ocorreu um erro ao processar sua solicitação.' });
