@@ -23,7 +23,6 @@ if (!process.env.GEMINI_API_KEY) {
 
 // Conexão com MongoDB
 const MONGO_URI = process.env.MONGO_URI;
-console.log('MONGO_URI lida do ambiente:', process.env.MONGO_URI);
 mongoose.connect(MONGO_URI)
   .then(() => {
     console.log('✅ Conectado ao MongoDB com sucesso!');
