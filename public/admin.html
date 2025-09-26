@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Painel de Administração - Assistente Gemini IFPR</title>
+    <link rel="stylesheet" href="admin.css">
+</head>
+<body>
+    <div class="admin-container">
+        <!-- Área de Login -->
+        <div id="login-area" class="login-container">
+            <div class="login-card">
+                <h1>🔐 Acesso Administrativo</h1>
+                <p>Digite a senha de administrador para acessar o painel de controle</p>
+                <div class="login-form">
+                    <input type="password" id="admin-password" placeholder="Senha de administrador">
+                    <button id="login-btn" class="btn-primary">Entrar</button>
+                </div>
+                <div id="login-error" class="error-message" style="display: none;"></div>
+            </div>
+        </div>
+
+        <!-- Painel Principal (inicialmente oculto) -->
+        <div id="admin-panel" class="admin-panel" style="display: none;">
+            <!-- Header -->
+            <header class="admin-header">
+                <h1>🛠️ Painel de Controle - Assistente Gemini IFPR</h1>
+                <div class="header-actions">
+                    <span id="last-update">Última atualização: --</span>
+                    <button id="refresh-btn" class="btn-secondary">🔄 Atualizar</button>
+                    <button id="logout-btn" class="btn-danger">🚪 Sair</button>
+                </div>
+            </header>
+
+            <!-- Dashboard de Métricas -->
+            <section class="metrics-section">
+                <h2>📊 Estatísticas do Sistema</h2>
+                <div class="metrics-grid">
+                    <div class="metric-card">
+                        <div class="metric-icon">💬</div>
+                        <div class="metric-content">
+                            <h3 id="total-conversas">--</h3>
+                            <p>Total de Conversas</p>
+                        </div>
+                    </div>
+                    <div class="metric-card">
+                        <div class="metric-icon">📝</div>
+                        <div class="metric-content">
+                            <h3 id="total-mensagens">--</h3>
+                            <p>Total de Mensagens</p>
+                        </div>
+                    </div>
+                    <div class="metric-card">
+                        <div class="metric-icon">👥</div>
+                        <div class="metric-content">
+                            <h3 id="usuarios-ativos">--</h3>
+                            <p>Usuários Únicos</p>
+                        </div>
+                    </div>
+                    <div class="metric-card">
+                        <div class="metric-icon">📈</div>
+                        <div class="metric-content">
+                            <h3 id="media-mensagens">--</h3>
+                            <p>Média Msg/Conversa</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Últimas Conversas -->
+            <section class="recent-conversations">
+                <h2>🕒 Últimas Conversas</h2>
+                <div class="conversations-list" id="ultimas-conversas">
+                    <!-- Será preenchido dinamicamente -->
+                </div>
+            </section>
+
+            <!-- Controle da IA -->
+            <section class="ai-control-section">
+                <h2>🧠 Controle da Personalidade da IA</h2>
+                <div class="ai-control-card">
+                    <div class="instruction-info">
+                        <p><strong>Instrução Atual:</strong></p>
+                        <p id="instruction-updated">Última atualização: --</p>
+                    </div>
+                    <textarea id="system-instruction" rows="6" placeholder="Digite a nova instrução de sistema para o bot..."></textarea>
+                    <div class="instruction-actions">
+                        <button id="load-instruction-btn" class="btn-secondary">📥 Carregar Atual</button>
+                        <button id="save-instruction-btn" class="btn-primary">💾 Salvar Nova Instrução</button>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Gráfico de Atividade (Últimos 7 dias) -->
+            <section class="activity-chart-section">
+                <h2>📊 Atividade dos Últimos 7 Dias</h2>
+                <div class="chart-container">
+                    <canvas id="activity-chart" width="400" height="200"></canvas>
+                </div>
+            </section>
+
+            <!-- Logs do Sistema -->
+            <section class="system-logs">
+                <h2>📋 Logs do Sistema</h2>
+                <div class="logs-container" id="system-logs">
+                    <!-- Logs serão adicionados aqui -->
+                </div>
+            </section>
+        </div>
+    </div>
+
+    <script src="admin.js"></script>
+</body>
+</html>

@@ -8,18 +8,48 @@
 </head>
 <body>
 
-    <div class="chat-container">
-        <div class="chat-header">
-            <h1>Converse com a IA</h1>
-            <p>Faça uma pergunta e a IA irá responder.</p>
+    <div class="main-container">
+        <div class="chat-container">
+            <div class="chat-header">
+                <h1>🤖 <span id="nome-bot-display">Assistente Gemini IFPR</span> 🤖</h1>
+                <p id="slogan-bot-display">Seu companheiro inteligente para dúvidas e aprendizado!</p>
+            </div>
+            <div class="chat-messages" id="chatMessages">
+                <!-- As mensagens do chat aparecerão aqui -->
+            </div>
+            <div class="chat-input-container">
+                <input type="text" id="userInput" placeholder="Digite sua pergunta aqui...">
+                <button id="sendButton">Enviar</button>
+            </div>
         </div>
-        <div class="chat-messages" id="chatMessages">
-            <!-- As mensagens do chat aparecerão aqui -->
-        </div>
-        <div class="chat-input-container">
-            <input type="text" id="userInput" placeholder="Digite sua pergunta aqui...">
-            <button id="sendButton">Enviar</button>
-        </div>
+        
+        <aside id="info-bot-container">
+            <h2>🤖 <span id="nome-bot-sidebar">Assistente Gemini IFPR</span> 🤖</h2>
+            <p id="slogan-bot-sidebar"><em>Seu companheiro inteligente para dúvidas e aprendizado!</em></p>
+            <div id="descricao-bot-display">
+                <p>Este chatbot foi desenvolvido utilizando a poderosa API Gemini do Google, oferecendo respostas inteligentes e contextualizadas para suas perguntas.</p>
+                <p>Ele é capaz de manter conversas naturais, responder dúvidas acadêmicas, auxiliar em projetos de programação e muito mais, sempre com foco no aprendizado e desenvolvimento educacional.</p>
+            </div>
+            <div id="autoria-bot">
+                <p><strong>Desenvolvido por:</strong></p>
+                <ul>
+                    <li>Equipe IFPR - Desenvolvimento Web</li>
+                    <li>Powered by Google Gemini AI</li>
+                    <li>Projeto Educacional IFCODE</li>
+                </ul>
+            </div>
+            
+            <div id="historico-container" style="margin-top: 30px;">
+                <h3>📚 Histórico de Conversas</h3>
+                <button id="carregar-historico-btn" class="action-btn">Ver Histórico</button>
+                <ul id="lista-sessoes" style="display: none;">
+                    <!-- A lista de sessões será populada aqui via JS -->
+                </ul>
+                <div id="visualizacao-conversa-detalhada" style="display: none;">
+                    <!-- O conteúdo de uma conversa selecionada aparecerá aqui -->
+                </div>
+            </div>
+        </aside>
     </div>
 
     <script type="importmap">
