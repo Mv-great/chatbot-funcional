@@ -1,5 +1,5 @@
 // Configurações
-const BACKEND_URL = 'http://localhost:3000';
+const BACKEND_URL = ''; // Usar caminho relativo para deploy no Render
 let adminPassword = '';
 let refreshInterval = null;
 
