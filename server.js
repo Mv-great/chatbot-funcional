@@ -5,7 +5,6 @@ import { GoogleGenAI } from '@google/genai';
 
 // Inicializa o Express
 const app = express();
-const port = process.env.PORT || 3000;
 
 // Configurações de Middleware
 app.use(cors());
@@ -66,4 +65,5 @@ app.post('/generate', async (req, res) => {
 // Inicia o servidor
 app.listen(port, () => {
   console.log(`Servidor rodando em http://localhost:${port}`);
+
 });
