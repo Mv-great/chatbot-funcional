@@ -22,7 +22,7 @@ if (!process.env.GEMINI_API_KEY) {
 }
 
 // Conexão com MongoDB
-const MONGO_URI = process.env.MONGO_URI || 'mongodb://localhost:27017/chatbot-ifpr';
+const MONGO_URI = process.env.MONGO_URI;
 mongoose.connect(MONGO_URI)
   .then(() => {
     console.log('✅ Conectado ao MongoDB com sucesso!');
@@ -270,7 +270,7 @@ app.put('/api/chat/historicos/:id', async (req, res) => {
 
 // Middleware para verificar senha de administrador
 function verificarSenhaAdmin(req, res, next) {
-  const senhaAdmin = process.env.ADMIN_PASSWORD || 'admin123';
+  const senhaAdmin = process.env.ADMIN_PASSWORD;
   const senhaEnviada = req.headers['x-admin-password'] || req.body.adminPassword;
 
   if (!senhaEnviada || senhaEnviada !== senhaAdmin) {
@@ -430,5 +430,5 @@ app.get('/api/admin/all-historicos', verificarSenhaAdmin, async (req, res) => {
 
 // Inicia o servidor
 app.listen(port, () => {
-  console.log(`Servidor rodando em http://localhost:${port}`);
+  console.log(`Servidor rodando na porta ${port}`);
 });
