@@ -427,7 +427,12 @@ app.get('/api/admin/all-historicos', verificarSenhaAdmin, async (req, res) => {
     res.status(500).json({ error: 'Erro interno ao buscar históricos.' });
   }
 });
+app.get('/',async (req, res) => {
+ 
+    res.status(200).json({ success: 'servidor inicializado' });
+  
 
+});
 // Inicia o servidor
 app.listen(port, () => {
   console.log(`Servidor rodando na porta ${port}`);
