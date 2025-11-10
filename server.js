@@ -1,10 +1,10 @@
 import 'dotenv/config'; // Carrega as variáveis de ambiente no início
 import express from 'express';
 import cors from 'cors';
-import mongoose from 'mongoose';
+// import mongoose from 'mongoose'; // Comentado para deploy em ambientes sem DB
 import { GoogleGenAI } from '@google/genai';
-import SessaoChat from './models/SessaoChat.js';
-import SystemInstruction from './models/SystemInstruction.js';
+// import SessaoChat from './models/SessaoChat.js'; // Comentado para deploy em ambientes sem DB
+// import SystemInstruction from './models/SystemInstruction.js'; // Comentado para deploy em ambientes sem DB
 
 // Inicializa o Express
 const app = express();
@@ -21,8 +21,9 @@ if (!process.env.GEMINI_API_KEY) {
   process.exit(1);
 }
 
-// Conexão com MongoDB
-const MONGO_URI = process.env.MONGO_URI;
+// Conexão com MongoDB (Comentado para deploy no Vercel)
+// const MONGO_URI = process.env.MONGO_URI;
+/*
 mongoose.connect(MONGO_URI)
   .then(() => {
     console.log('✅ Conectado ao MongoDB com sucesso!');
@@ -31,6 +32,7 @@ mongoose.connect(MONGO_URI)
     console.error('❌ Erro ao conectar com MongoDB:', error);
     process.exit(1);
   });
+*/
 
 // Inicializa o cliente da IA. A chave é pega automaticamente do process.env
 const ai = new GoogleGenAI({});
@@ -56,19 +58,8 @@ app.post('/generate', async (req, res) => {
   }
 
   try {
-    // Busca a instrução de sistema atual
-    let systemInstruction = await SystemInstruction.findOne({ 
-      botId: 'assistente-gemini-ifpr', 
-      isActive: true 
-    });
-    
-    if (!systemInstruction) {
-      // Cria uma instrução padrão se não existir
-      systemInstruction = await SystemInstruction.create({
-        botId: 'assistente-gemini-ifpr',
-        instruction: 'Você é um assistente educacional inteligente do IFPR. Responda de forma clara, educativa e sempre incentive o aprendizado. Mantenha um tom amigável e profissional.'
-      });
-    }
+    // Usa uma instrução de sistema padrão, pois o MongoDB está desativado para o Vercel
+    let systemInstruction = { instruction: 'Você é um assistente educacional inteligente do IFPR. Responda de forma clara, educativa e sempre incentive o aprendizado. Mantenha um tom amigável e profissional.' };
 
     // Prepara o histórico com a system instruction
     const historicoComSystem = [
@@ -112,7 +103,8 @@ app.post('/generate', async (req, res) => {
   }
 });
 
-// Endpoint para salvar histórico de chat
+// Endpoint para salvar histórico de chat (Comentado para deploy no Vercel)
+/*
 app.post('/api/chat/salvar-historico', async (req, res) => {
   try {
     const { sessionId, userId, messages, titulo } = req.body;
@@ -150,8 +142,10 @@ app.post('/api/chat/salvar-historico', async (req, res) => {
     res.status(500).json({ error: 'Erro interno ao salvar histórico de chat.' });
   }
 });
+*/
 
-// Endpoint para buscar históricos de chat
+// Endpoint para buscar históricos de chat (Comentado para deploy no Vercel)
+/*
 app.get('/api/chat/historicos', async (req, res) => {
   try {
     const { userId } = req.query;
@@ -172,8 +166,10 @@ app.get('/api/chat/historicos', async (req, res) => {
     res.status(500).json({ error: 'Erro interno ao buscar históricos de chat.' });
   }
 });
+*/
 
-// Endpoint para excluir histórico
+// Endpoint para excluir histórico (Comentado para deploy no Vercel)
+/*
 app.delete('/api/chat/historicos/:id', async (req, res) => {
   try {
     const { id } = req.params;
@@ -194,8 +190,10 @@ app.delete('/api/chat/historicos/:id', async (req, res) => {
     res.status(500).json({ error: 'Erro interno ao excluir histórico.' });
   }
 });
+*/
 
-// Endpoint para gerar título inteligente
+// Endpoint para gerar título inteligente (Comentado para deploy no Vercel)
+/*
 app.post('/api/chat/historicos/:id/gerar-titulo', async (req, res) => {
   try {
     const { id } = req.params;
@@ -236,8 +234,10 @@ Responda apenas com o título sugerido, sem explicações adicionais.`;
     res.status(500).json({ error: 'Erro interno ao gerar título.' });
   }
 });
+*/
 
-// Endpoint para atualizar título
+// Endpoint para atualizar título (Comentado para deploy no Vercel)
+/*
 app.put('/api/chat/historicos/:id', async (req, res) => {
   try {
     const { id } = req.params;
@@ -267,8 +267,10 @@ app.put('/api/chat/historicos/:id', async (req, res) => {
     res.status(500).json({ error: 'Erro interno ao atualizar título.' });
   }
 });
+*/
 
-// Middleware para verificar senha de administrador
+// Middleware para verificar senha de administrador (Comentado para deploy no Vercel)
+/*
 function verificarSenhaAdmin(req, res, next) {
   const senhaAdmin = process.env.ADMIN_PASSWORD;
   const senhaEnviada = req.headers['x-admin-password'] || req.body.adminPassword;
@@ -279,8 +281,10 @@ function verificarSenhaAdmin(req, res, next) {
 
   next();
 }
+*/
 
-// Endpoint para estatísticas do admin
+// Endpoint para estatísticas do admin (Comentado para deploy no Vercel)
+/*
 app.get('/api/admin/stats', verificarSenhaAdmin, async (req, res) => {
   try {
     // Conta total de conversas
@@ -333,10 +337,13 @@ app.get('/api/admin/stats', verificarSenhaAdmin, async (req, res) => {
     res.status(500).json({ error: 'Erro interno ao buscar estatísticas.' });
   }
 });
+*/
 
-// Endpoint para buscar instrução de sistema atual
+// Endpoint para buscar instrução de sistema atual (Comentado para deploy no Vercel)
+/*
 app.get('/api/admin/system-instruction', verificarSenhaAdmin, async (req, res) => {
   try {
+    // Busca a instrução de sistema atual
     let systemInstruction = await SystemInstruction.findOne({ 
       botId: 'assistente-gemini-ifpr', 
       isActive: true 
@@ -361,8 +368,10 @@ app.get('/api/admin/system-instruction', verificarSenhaAdmin, async (req, res) =
     res.status(500).json({ error: 'Erro interno ao buscar instrução de sistema.' });
   }
 });
+*/
 
-// Endpoint para atualizar instrução de sistema
+// Endpoint para atualizar instrução de sistema (Comentado para deploy no Vercel)
+/*
 app.post('/api/admin/system-instruction', verificarSenhaAdmin, async (req, res) => {
   try {
     const { instruction } = req.body;
@@ -397,8 +406,10 @@ app.post('/api/admin/system-instruction', verificarSenhaAdmin, async (req, res) 
     res.status(500).json({ error: 'Erro interno ao atualizar instrução de sistema.' });
   }
 });
+*/
 
 // Endpoint para buscar todos os históricos (admin)
+/*
 app.get('/api/admin/all-historicos', verificarSenhaAdmin, async (req, res) => {
   try {
     const { page = 1, limit = 10 } = req.query;
@@ -427,6 +438,8 @@ app.get('/api/admin/all-historicos', verificarSenhaAdmin, async (req, res) => {
     res.status(500).json({ error: 'Erro interno ao buscar históricos.' });
   }
 });
+*/
+
 app.get('/',async (req, res) => {
  
     res.status(200).json({ success: 'servidor inicializado' });
