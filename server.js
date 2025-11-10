@@ -442,6 +442,7 @@ app.get('/api/admin/all-historicos', verificarSenhaAdmin, async (req, res) => {
 
 app.get('/',async (req, res) => {
  
+    res.status(200).json({ success: 'servidor inicializado' });
   
 
 });
