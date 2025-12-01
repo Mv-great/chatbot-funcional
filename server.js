@@ -287,14 +287,34 @@ function verificarSenhaAdmin(req, res, next) {
 /*
 app.get('/api/admin/stats', verificarSenhaAdmin, async (req, res) => {
   try {
-    // Conta total de conversas
-    const totalConversas = await SessaoChat.countDocuments();
+    // Pipeline de agregação para calcular métricas avançadas
+    const metricsPipeline = [
+      {
+        $project: {
+          _id: 1,
+          messageCount: { $size: "$messages" }
+        }
+      },
+      {
+        $group: {
+          _id: null,
+          totalConversas: { $sum: 1 },
+          totalMensagens: { $sum: "$messageCount" },
+          somaComprimento: { $sum: "$messageCount" }
+        }
+      },
+      {
+        $project: {
+          _id: 0,
+          totalConversas: 1,
+          totalMensagens: 1,
+          comprimentoMedioConversa: { $divide: ["$somaComprimento", "$totalConversas"] }
+        }
+      }
+    ];
 
-    // Conta total de mensagens
-    const sessoes = await SessaoChat.find({}, 'messages');
-    const totalMensagens = sessoes.reduce((total, sessao) => {
-      return total + (sessao.messages ? sessao.messages.length : 0);
-    }, 0);
+    const metricsResult = await SessaoChat.aggregate(metricsPipeline);
+    const { totalConversas = 0, totalMensagens = 0, comprimentoMedioConversa = 0 } = metricsResult[0] || {};
 
     // Busca as 5 conversas mais recentes
     const ultimasConversas = await SessaoChat.find({})
@@ -328,6 +348,7 @@ app.get('/api/admin/stats', verificarSenhaAdmin, async (req, res) => {
     res.json({
       totalConversas,
       totalMensagens,
+      comprimentoMedioConversa: parseFloat(comprimentoMedioConversa.toFixed(2)), // Formata para 2 casas decimais
       ultimasConversas,
       conversasPorDia
     });
