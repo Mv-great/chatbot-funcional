@@ -4,7 +4,10 @@ import cors from 'cors';
 // import mongoose from 'mongoose'; // Comentado para deploy em ambientes sem DB
 import { GoogleGenAI } from '@google/genai';
 // import SessaoChat from './models/SessaoChat.js'; // Comentado para deploy em ambientes sem DB
+
 // import SystemInstruction from './models/SystemInstruction.js'; // Comentado para deploy em ambientes sem DB
+// import User from './models/User.js'; // Comentado para deploy em ambientes sem DB
+
 
 // Inicializa o Express
 const app = express();
@@ -58,38 +61,58 @@ app.post('/generate', async (req, res) => {
   }
 
   try {
-    // Usa uma instrução de sistema padrão, pois o MongoDB está desativado para o Vercel
-    let systemInstruction = { instruction: 'Você é um assistente educacional inteligente do IFPR. Responda de forma clara, educativa e sempre incentive o aprendizado. Mantenha um tom amigável e profissional.' };
+    // 1. Lógica Condicional no Backend: Determinar a instrução de sistema
+    let systemInstructionText = 'Você é um assistente educacional inteligente do IFPR. Responda de forma clara, educativa e sempre incentive o aprendizado. Mantenha um tom amigável e profissional.'; // Padrão
 
-    // Prepara o histórico com a system instruction
+    // ** Lógica para Personalidade Adaptativa (Comentada para deploy no Vercel) **
+    /*
+    if (userId) {
+      // Tenta buscar a instrução de sistema personalizada do usuário
+      const user = await User.findOne({ userId });
+      if (user && user.systemInstruction) {
+        systemInstructionText = user.systemInstruction;
+      } else {
+        // Se o usuário não tem uma personalizada, busca a global definida pelo admin
+        const globalInstruction = await SystemInstruction.findOne({ 
+          botId: 'assistente-gemini-ifpr', 
+          isActive: true 
+        });
+        if (globalInstruction) {
+          systemInstructionText = globalInstruction.instruction;
+        }
+      }
+    }
+    */
+    
+    // 2. Prepara o histórico com a system instruction
     const historicoComSystem = [
-      { role: "user", parts: [{ text: systemInstruction.instruction }] },
+      { role: "user", parts: [{ text: systemInstructionText }] },
       { role: "model", parts: [{ text: "Entendido! Estou pronto para ajudar como assistente educacional do IFPR." }] },
       ...historicoRecebido
     ];
 
-    // USA O NOVO MÉTODO: ai.chats.create
+    // 3. USA O NOVO MÉTODO: ai.chats.create
     const chat = ai.chats.create({
       model: "gemini-2.5-flash",
       history: historicoComSystem,
     });
 
-    // Envia a mensagem no novo formato
+    // 4. Envia a mensagem no novo formato
     const result = await chat.sendMessage({
       message: prompt,
     });
 
-    // A resposta de texto agora vem direto no '.text'
+    // 5. A resposta de texto agora vem direto no '.text'
     const textoResposta = result.text;
 
-    // Cria o novo histórico (sem a system instruction para o frontend)
+    // 6. Cria o novo histórico (sem a system instruction para o frontend)
     const novoHistorico = [
       ...historicoRecebido,
       { role: "user", parts: [{ text: prompt }] },
       { role: "model", parts: [{ text: textoResposta }] },
     ];
 
-    // Envia a resposta E o novo histórico atualizado
+    // 7. Envia a resposta E o novo histórico atualizado
     res.json({ 
       response: textoResposta, 
       historico: novoHistorico,
@@ -234,7 +257,6 @@ Responda apenas com o título sugerido, sem explicações adicionais.`;
     res.status(500).json({ error: 'Erro interno ao gerar título.' });
   }
 });
-*/
 
 // Endpoint para atualizar título (Comentado para deploy no Vercel)
 /*
@@ -267,7 +289,61 @@ app.put('/api/chat/historicos/:id', async (req, res) => {
     res.status(500).json({ error: 'Erro interno ao atualizar título.' });
   }
 });
+
+
+// Endpoint para buscar a personalidade do usuário (Comentado para deploy no Vercel)
+/*
+app.get('/api/user/personality', async (req, res) => {
+  try {
+    const { userId } = req.query;
+
+    if (!userId) {
+      return res.status(400).json({ error: 'userId é obrigatório.' });
+    }
+
+    const user = await User.findOne({ userId }).select('systemInstruction');
+
+    res.json({
+      systemInstruction: user ? user.systemInstruction : ''
+    });
+
+  } catch (error) {
+    console.error('[Servidor] Erro ao buscar personalidade do usuário:', error);
+    res.status(500).json({ error: 'Erro interno ao buscar personalidade do usuário.' });
+  }
+});
 */
+
+// Endpoint para salvar a personalidade do usuário (Comentado para deploy no Vercel)
+/*
+app.post('/api/user/personality', async (req, res) => {
+  try {
+    const { userId, systemInstruction } = req.body;
+
+    if (!userId || systemInstruction === undefined) {
+      return res.status(400).json({ error: 'userId e systemInstruction são obrigatórios.' });
+    }
+
+    // Encontra e atualiza, ou cria um novo usuário se não existir
+    const user = await User.findOneAndUpdate(
+      { userId },
+      { systemInstruction: systemInstruction.trim() },
+      { new: true, upsert: true } // upsert: true cria o documento se não for encontrado
+    );
+
+    res.json({
+      success: true,
+      message: 'Personalidade do usuário salva com sucesso!',
+      systemInstruction: user.systemInstruction
+    });
+
+  } catch (error) {
+    console.error('[Servidor] Erro ao salvar personalidade do usuário:', error);
+    res.status(500).json({ error: 'Erro interno ao salvar personalidade do usuário.' });
+  }
+});
+*/
+
 
 // Middleware para verificar senha de administrador (Comentado para deploy no Vercel)
 /*
